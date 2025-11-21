@@ -25,18 +25,19 @@ const Index = () => {
     setEmailResults([]);
 
     try {
-      console.log("Sending request to n8n webhook:", webhookUrl);
+      // Build URL with query parameters for GET request
+      const params = new URLSearchParams({
+        timestamp: new Date().toISOString(),
+        action: "process_emails",
+        source: "email-automation-ui",
+      });
       
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          timestamp: new Date().toISOString(),
-          action: "process_emails",
-          source: "email-automation-ui",
-        }),
+      const fullUrl = `${webhookUrl}?${params.toString()}`;
+      console.log("Sending GET request to n8n webhook:", fullUrl);
+      
+      const response = await fetch(fullUrl, {
+        method: "GET",
+        mode: "cors",
       });
 
       console.log("Response status:", response.status);
