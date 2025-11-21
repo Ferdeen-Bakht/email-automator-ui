@@ -64,6 +64,14 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/02bfd6af-41ac-478d-b3e3-01cac09f0e84) and click on Share -> Publish.
 
+## Make changes
+
+https://lovable.dev/projects/02bfd6af-41ac-478d-b3e3-01cac09f0e84?magic_link=mc_b7d0221d-c16e-4aad-8aad-93bad71b13a7
+
+## Deployed version
+
+https://iotifyaiautomation.lovable.app
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!
