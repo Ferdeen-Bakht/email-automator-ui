@@ -1,0 +1,340 @@
+{
+  "name": "Read resumes",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 8,
+        "simple": false,
+        "filters": {
+          "q": "has:attachment"
+        },
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -928,
+        16
+      ],
+      "id": "d8c90a93-15f8-414b-8cdc-294e2bdaeee0",
+      "name": "Get many messages",
+      "webhookId": "99eaec53-26c9-4ed5-86db-90873ae845f8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jSG1BdticdeoDPtj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        16
+      ],
+      "id": "afda0354-00cb-45e2-8c49-69de087bbff4",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst pdfFiles = items.filter(item => {\n  if (!item.binary) return false; // no binary attachments\n\n  // Loop through all binary keys (attachment_0, attachment_1, etc.)\n  for (const key of Object.keys(item.binary)) {\n    const binaryData = item.binary[key];\n\n    // Check the mime type or file extension\n    const fileName = (binaryData.fileName || \"\").toLowerCase().trim();\n    const mimeType = (binaryData.mimeType || \"\").toLowerCase().trim();\n\n    if (fileName.endsWith(\".pdf\") || mimeType === \"application/pdf\") {\n      return true; // keep this item\n    }\n  }\n  return false;\n});\n\nif (pdfFiles.length === 0) {\n  return [{\n    json: {\n      message: \"No PDF files found\",\n      total_checked: items.length\n    }\n  }];\n}\n\nreturn pdfFiles;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -768,
+        16
+      ],
+      "id": "3717d592-6715-4ec4-bb1a-0476c967667d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}\n{{ $('Code in JavaScript').item.json.headers.subject }}\n{{ $('Code in JavaScript').item.json.headers.from }}\n\nkeywords_points = [\n    # === Machine Learning Engineer ===\n    {\"keyword\": \"python\", \"points\": 10},\n    {\"keyword\": \"tensorflow\", \"points\": 10},\n    {\"keyword\": \"pytorch\", \"points\": 10},\n    {\"keyword\": \"scikit-learn\", \"points\": 10},\n    {\"keyword\": \"numpy\", \"points\": 10},\n    {\"keyword\": \"pandas\", \"points\": 10},\n    {\"keyword\": \"flask\", \"points\": 5},\n    {\"keyword\": \"docker\", \"points\": 5},\n    {\"keyword\": \"sql\", \"points\": 5},\n    {\"keyword\": \"mlflow\", \"points\": 5},\n    {\"keyword\": \"regression\", \"points\": 5},\n    {\"keyword\": \"classification\", \"points\": 5},\n    {\"keyword\": \"data preprocessing\", \"points\": 5},\n    {\"keyword\": \"feature engineering\", \"points\": 5},\n    {\"keyword\": \"model deployment\", \"points\": 5},\n\n    # === Frontend Developer ===\n    {\"keyword\": \"html\", \"points\": 10},\n    {\"keyword\": \"css\", \"points\": 10},\n    {\"keyword\": \"javascript\", \"points\": 10},\n    {\"keyword\": \"react\", \"points\": 10},\n    {\"keyword\": \"next.js\", \"points\": 10},\n    {\"keyword\": \"vue.js\", \"points\": 5},\n    {\"keyword\": \"bootstrap\", \"points\": 5},\n    {\"keyword\": \"tailwind\", \"points\": 5},\n    {\"keyword\": \"ui/ux\", \"points\": 5},\n    {\"keyword\": \"responsive design\", \"points\": 5},\n    {\"keyword\": \"typescript\", \"points\": 5},\n    {\"keyword\": \"figma\", \"points\": 5},\n    {\"keyword\": \"frontend development\", \"points\": 5},\n\n    # === Backend Developer ===\n    {\"keyword\": \"node.js\", \"points\": 10},\n    {\"keyword\": \"express\", \"points\": 10},\n    {\"keyword\": \"flask\", \"points\": 10},\n    {\"keyword\": \"django\", \"points\": 10},\n    {\"keyword\": \"sql\", \"points\": 10},\n    {\"keyword\": \"postgresql\", \"points\": 5},\n    {\"keyword\": \"mongodb\", \"points\": 5},\n    {\"keyword\": \"rest api\", \"points\": 10},\n    {\"keyword\": \"graphql\", \"points\": 5},\n    {\"keyword\": \"authentication\", \"points\": 5},\n    {\"keyword\": \"docker\", \"points\": 5},\n    {\"keyword\": \"microservices\", \"points\": 5},\n    {\"keyword\": \"redis\", \"points\": 5},\n    {\"keyword\": \"backend development\", \"points\": 5},\n\n    # === AI Engineer ===\n    {\"keyword\": \"artificial intelligence\", \"points\": 10},\n    {\"keyword\": \"ai\", \"points\": 10},\n    {\"keyword\": \"transformer\", \"points\": 10},\n    {\"keyword\": \"nlp\", \"points\": 10},\n    {\"keyword\": \"llm\", \"points\": 10},\n    {\"keyword\": \"generative ai\", \"points\": 10},\n    {\"keyword\": \"openai api\", \"points\": 10},\n    {\"keyword\": \"huggingface\", \"points\": 10},\n    {\"keyword\": \"reinforcement learning\", \"points\": 10},\n    {\"keyword\": \"rllib\", \"points\": 5},\n    {\"keyword\": \"gpt\", \"points\": 5},\n    {\"keyword\": \"langchain\", \"points\": 5},\n    {\"keyword\": \"gan\", \"points\": 5},\n    {\"keyword\": \"opencv\", \"points\": 5},\n    {\"keyword\": \"computer vision\", \"points\": 5},\n\n    # === Bonus / General Tech ===\n    {\"keyword\": \"aws\", \"points\": 5},\n    {\"keyword\": \"azure\", \"points\": 5},\n    {\"keyword\": \"gcp\", \"points\": 5},\n    {\"keyword\": \"linux\", \"points\": 5},\n    {\"keyword\": \"git\", \"points\": 5},\n    {\"keyword\": \"github\", \"points\": 5},\n    {\"keyword\": \"api integration\", \"points\": 5},\n    {\"keyword\": \"json\", \"points\": 5},\n    {\"keyword\": \"agile\", \"points\": 5},\n    {\"keyword\": \"scrum\", \"points\": 5},\n    {\"keyword\": \"docker-compose\", \"points\": 5}\n]\nif the total points are more than 60 than add to accepted emails otherwise add to rejected emails. Output only email, subject, resume text and rejected or accepted.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        16
+      ],
+      "id": "8cfcff7b-b517-4d45-b408-7d6933a53966",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        208
+      ],
+      "id": "66becc7d-1708-497d-9652-f5c7c8e5a64a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vfcVa5MtL82gGcd6",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [\n  {\n    json: {\n      output: $input.all().map(item => item.json.output)\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -784,
+        176
+      ],
+      "id": "a9c2f8ce-f431-4ec9-a72d-42f8590f08c1",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code in JavaScript').item.json.from.value[0].address }}",
+        "subject": "Accepted and rejected resumes",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        144
+      ],
+      "id": "d2c2bbe4-5e1f-4f0e-b6d0-94f2008569cb",
+      "name": "Send a message",
+      "webhookId": "5ec32043-abf6-4aab-b5bf-f85513ceda99",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "jSG1BdticdeoDPtj",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('AI Agent').item.json.output }}\n\nAdd subject to specify that the following internship has been accepted or rejected\nadd html and css tags to beautify the text and output only them",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -16,
+        144
+      ],
+      "id": "03f6a1da-d81e-4cc7-bc7a-d049451c5046",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        304
+      ],
+      "id": "dda1f693-f077-447a-ac44-38636d51c97b",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vfcVa5MtL82gGcd6",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "26e787fa-a0c9-4cf3-af3b-c07732f06e3d",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "path": "email-automation",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        16
+      ],
+      "id": "0fdef559-657e-4eeb-9fe4-17d46a8a565b",
+      "name": "Webhook",
+      "webhookId": "71d6ad25-c013-492e-8085-a416260419e6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        144,
+        0
+      ],
+      "id": "9c08f91a-1234-4a20-9cee-7aa199de93b5",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get many messages": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "96c1492b-3b4d-48fb-9bab-b8eb077d168c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e30c5cd13ca3caf4ad232276c3e12f151bcacf6660fcdbd73cfbb878935b7ad7"
+  },
+  "id": "c7MHyzy4AmEVuFE8",
+  "tags": []
+}
